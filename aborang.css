@@ -1,0 +1,82 @@
+body {
+    background-image: url(imej/background.png);
+    background-size: cover;
+    background-attachment: fixed;
+    margin: 0px;
+}
+
+h3 {
+    font-family: 'Geist Mono';
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    color: #d3d9e7;
+
+    padding: 10px 22px;
+    border-radius: 20px 20px 0px 0px;
+    margin: 30px auto 0px;
+    background-color: #f15f69;
+    /*box-shadow: 15px 15px 6px 0px rgba(96, 96, 96, 0.7);*/
+}
+
+form {
+    font-family: 'Geist Mono';
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+
+    padding: 22px;
+    /*border: 2px solid mediumorchid;*/
+    border-radius: 0px 0px 15px 15px;
+    margin: 0px auto;
+    background-color: #ffd3e2;
+    /*box-shadow: 15px 15px 6px 0px rgba(57, 43, 43, 0.67);*/
+}
+
+h4 {
+    font-family: verdana;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+    color: black;
+    width: 380px;
+
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px solid black;
+    margin: 20px auto 0px;
+    background-color: #ffd3e2;
+    box-shadow: 15px 15px 6px 0px rgba(96, 96, 96, 0.7);
+}
+
+form.pendek, h3.pendek {
+    width: 270px;
+}
+
+form.panjang, h3.panjang {
+    width: 380px;
+}
+
+input[type="text"], input[type="password"], input[type="file"], select {
+    width: 230px;
+    padding: 7px 15px;
+    margin: 5px;
+    border-radius: 20px;
+}
+
+::placeholder {
+    color: silver;
+}
+
+input[type="file"] {
+    padding: 3px;
+}
+
+td:nth-child(1) {
+    font-family: verdana;
+    font-size: 14px;
+    color: black;
+    text-align: left;
+
+    width: 200px;
+}

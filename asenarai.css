@@ -1,0 +1,48 @@
+table {
+    font-family: 'Geist Mono';
+    font-size: 12px;
+    font-weight: normal;
+    text-align: center;
+    color: #d3d9e7; /*white*/
+
+    margin: 0px auto;
+    margin-botton: 0px;
+    border-collapse: collapse;
+    clear: left;
+}
+
+table.maklumat {
+    width: 400px;
+}
+
+caption {
+    font-size: 16px;
+    font-weight: bold;
+    color: #32a78a; /*green*/
+    padding: 8px;
+    margin-top: 5px;
+}
+
+td, th {
+    padding: 8px;
+    /*border: 2px solid black;*/
+}
+
+td.nama {
+    width: 150px;
+    text-align: left;
+}
+
+tr: nth-child(odd) {
+    background-color: pink;
+}
+
+tr: nth-child(even) {
+    background-color: mistyrose;
+}
+
+th {
+    font-weight: bold;
+    color: #d3d9e7; /*white*/
+    background-color: #f15f69; /*red*/
+}

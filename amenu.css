@@ -1,0 +1,108 @@
+body {
+    background-image: url(imej/background.png);
+    background-size: cover;
+    background-attachment: fixed;
+    margin: 0px;
+}
+
+img.logo {
+    height: 80px;
+    /*width: 90px;*/
+    margin-right: 40px;
+}
+
+img.kelab {
+    height: 50px;
+}
+
+header {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+nav {
+    top: 140px;
+    width: 100%;
+    height: 45px;
+    padding: 0px;
+
+    /*border: 3px dashed palevioletred;*/
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+main.menu {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+figure {
+    margin: 20px 0px 0px 0px;
+}
+
+figcaption {
+    font-family: verdana;
+    font-size: 13px;
+    padding: 1px;
+    text-align: center;
+    background-color: white;
+}
+
+img.home {
+    border: 2px solid red;
+    width: 300px;
+}
+
+ul {
+    list-style: none;
+    padding: 0px;
+    margin: 0px;
+    text-align: center;
+}
+
+ul li {
+    display: block;
+    float: left;
+}
+
+li ul {
+    display: none;
+}
+
+ul li a {
+    font-family: 'Geist Mono';
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+    color: #d3d9e7;
+    text-decoration: none;
+
+    width: 110px;
+    padding: 8px 10px;
+    /*border: 3px dashed black;*/
+    border-radius: 10px;
+    background-color: #f15f69;
+    margin: 4px 15px 4px 0px;
+    display: block;
+}
+
+ul li a: hover {
+    color: black;
+    background-color: silver;
+}
+
+li: hover ul {
+    display: block;
+    position: absolute;
+}
+
+li: hover li {
+    float: none;
+}
