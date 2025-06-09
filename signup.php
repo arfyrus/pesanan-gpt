@@ -1,62 +1,100 @@
 <?php
+    session_start();
     include("sambungan.php");
-    include("pelanggan_menu.php");
-
+    
+    $error = '';
+    $success = '';
+    
     if (isset($_POST["submit"])) {
-        $no_telefon = $_POST["no_telefon"];
+        $no_telefon = mysqli_real_escape_string($sambungan, $_POST["no_telefon"]);
         $password = $_POST["password"];
-        $nama_pelanggan = $_POST["nama_pelanggan"];
-
-        $sql = "INSERT INTO pelanggan VALUES ('$no_telefon', '$password', '$nama_pelanggan')";
-        echo $sql;
-        $result = mysqli_query($sambungan, $sql);
-        if ($result)
-            echo "<script>alert('Berjaya daftar pelanggan baru')</script>";
-        else
-            echo "<script>alert('Gagal daftar pelanggan baru')</script>";
-        echo "<script>window.location='index.php'</script>";
+        $nama_pelanggan = mysqli_real_escape_string($sambungan, $_POST["nama_pelanggan"]);
+        
+        // Validate phone number
+        if (!preg_match("/^[0-9]{10}$/", $no_telefon)) {
+            $error = "Nombor telefon mesti mengandungi 10 digit!";
+        } else {
+            // Check if phone number already exists
+            $sql = "SELECT * FROM pelanggan WHERE no_telefon = ?";
+            $stmt = mysqli_prepare($sambungan, $sql);
+            mysqli_stmt_bind_param($stmt, "s", $no_telefon);
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+            
+            if (mysqli_num_rows($result) > 0) {
+                $error = "Nombor telefon ini sudah didaftarkan!";
+            } else {
+                // Hash password
+                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+                
+                // Insert new user
+                $sql = "INSERT INTO pelanggan (no_telefon, password, nama_pelanggan) VALUES (?, ?, ?)";
+                $stmt = mysqli_prepare($sambungan, $sql);
+                mysqli_stmt_bind_param($stmt, "sss", $no_telefon, $hashed_password, $nama_pelanggan);
+                
+                if (mysqli_stmt_execute($stmt)) {
+                    $success = "Pendaftaran berjaya! Sila log masuk.";
+                    // Redirect after 2 seconds
+                    header("refresh:2;url=login.php");
+                } else {
+                    $error = "Pendaftaran gagal! Sila cuba lagi.";
+                }
+            }
+        }
     }
 ?>
 
-<link rel="stylesheet" href="aborang.css">
-<link rel="stylesheet" href="abutton.css">
-
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Akaun</title>
+    <link rel="stylesheet" href="auth.css">
+</head>
 <body>
-    <h3 class="panjang">SIGN UP</h3>
-    <form class="panjang" action="signup.php" method="post">
-        <table>
-            <tr>
-                <td>No. Telefon</td>
-                <td><input required type="text" name="no_telefon"
-                    placeholder="cth: 0123456789" pattern="[0-9]{10}"
-                    oninvalid="this.setCustomValidity('Sila masukkan 10 digit')"
-                    oninput="this.setCustomValidity('')"
-                    <?php
-                        $sql = "SELECT * FROM pelanggan ORDER BY no_telefon DESC LIMIT 1";
-                        $result = mysqli_query($sambungan, $sql);
-                        $bilrekod = mysqli_num_rows($result);
-                        if ($bilrekod > 0) {
-                            $pelanggan = mysqli_fetch_array($result);
-                            $no_telefon = ++$pelanggan["no_telefon"];
-                        }
-                        else
-                            $no_telefon = "0123456789";
-                        echo "value='$no_telefon'";
-                    ?>
-                >
-                </td>
-            </tr>
-            <tr>
-                <td>Nama Pelanggan</td>
-                <td><input required type="text" name="nama_pelanggan"></td>
-            </tr>
-            <tr>
-                <td>Password</td>
-                <td><input required type="password" name="password"></td>
-            </tr>
-        </table>
-
-        <button class="tambah" type="submit" name="submit">Daftar</button>
-        <button class="batal" type="button" onclick="window.location='index.php'">Batal</button>
-    </form>
+    <div class="auth-container">
+        <h3 class="auth-title">DAFTAR AKAUN</h3>
+        
+        <?php if ($error): ?>
+            <div class="error-message"><?php echo $error; ?></div>
+        <?php endif; ?>
+        
+        <?php if ($success): ?>
+            <div class="success-message"><?php echo $success; ?></div>
+        <?php endif; ?>
+        
+        <form class="auth-form" action="signup.php" method="post">
+            <div class="form-group">
+                <img src="imej/user.png" alt="User">
+                <input type="text" name="no_telefon" class="form-input" 
+                       placeholder="Nombor Telefon" 
+                       pattern="[0-9]{10}"
+                       title="Sila masukkan 10 digit nombor telefon"
+                       required>
+            </div>
+            
+            <div class="form-group">
+                <img src="imej/user.png" alt="Name">
+                <input type="text" name="nama_pelanggan" class="form-input" 
+                       placeholder="Nama Penuh" 
+                       required>
+            </div>
+            
+            <div class="form-group">
+                <img src="imej/lock.png" alt="Password">
+                <input type="password" name="password" class="form-input" 
+                       placeholder="Kata Laluan" 
+                       minlength="6"
+                       required>
+            </div>
+            
+            <button type="submit" name="submit" class="auth-button signup-button">Daftar</button>
+        </form>
+        
+        <div class="auth-links">
+            <p>Sudah ada akaun? <a href="login.php">Log masuk di sini</a></p>
+        </div>
+    </div>
 </body>
+</html>

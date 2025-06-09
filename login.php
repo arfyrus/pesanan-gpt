@@ -1,67 +1,96 @@
 <?php
+    session_start();
     include("sambungan.php");
-    include("pelanggan_menu.php");
-
+    
+    $error = '';
+    
     if (isset($_POST["submit"])) {
-        $userid = $_POST["userid"];
+        $userid = mysqli_real_escape_string($sambungan, $_POST["userid"]);
         $password = $_POST["password"];
-
+        
         $jumpa = FALSE;
-
-        if ($jumpa == FALSE) {
-            $sql = "SELECT * FROM pelanggan";
-            $result = mysqli_query($sambungan, $sql);
-            while ($pelanggan = mysqli_fetch_array($result)) {
-                if ($pelanggan["no_telefon"] == $userid && $pelanggan["password"] == $password) {
-                    $jumpa = TRUE;
-                    $_SESSION["idpengguna"] = $pelanggan["no_telefon"];
-                    $_SESSION["nama"] = $pelanggan["nama_pelanggan"];
-                    $_SESSION["status"] = "pelanggan";
-                    break;
-                }
+        
+        // Check pelanggan table
+        $sql = "SELECT * FROM pelanggan WHERE no_telefon = ?";
+        $stmt = mysqli_prepare($sambungan, $sql);
+        mysqli_stmt_bind_param($stmt, "s", $userid);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        
+        if ($pelanggan = mysqli_fetch_array($result)) {
+            if (password_verify($password, $pelanggan["password"])) {
+                $jumpa = TRUE;
+                $_SESSION["idpengguna"] = $pelanggan["no_telefon"];
+                $_SESSION["nama"] = $pelanggan["nama_pelanggan"];
+                $_SESSION["status"] = "pelanggan";
             }
         }
-
-        if ($jumpa == FALSE) {
-            $sql = "SELECT * FROM pekerja";
-            $result = mysqli_query($sambungan, $sql);
-            while ($pekerja = mysqli_fetch_array($result)) {
-                if ($pekerja["id_pekerja"] == $userid && $pekerja["password"] == $password) {
+        
+        // Check pekerja table if not found in pelanggan
+        if (!$jumpa) {
+            $sql = "SELECT * FROM pekerja WHERE id_pekerja = ?";
+            $stmt = mysqli_prepare($sambungan, $sql);
+            mysqli_stmt_bind_param($stmt, "s", $userid);
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+            
+            if ($pekerja = mysqli_fetch_array($result)) {
+                if (password_verify($password, $pekerja["password"])) {
                     $jumpa = TRUE;
                     $_SESSION["idpengguna"] = $pekerja["id_pekerja"];
                     $_SESSION["nama"] = $pekerja["nama_pekerja"];
                     $_SESSION["status"] = "pekerja";
-                    break;
                 }
             }
         }
-
-        if ($jumpa == TRUE) {
+        
+        if ($jumpa) {
             if ($_SESSION["status"] == "pelanggan") {
                 header("Location: index.php");
+                exit();
             } else if ($_SESSION["status"] == "pekerja") {
                 header("Location: pekerja_menu.php");
+                exit();
             }
-        echo "<script>alert('ID pengguna atau kata laluan salah!');</script>";
+        } else {
+            $error = "ID pengguna atau kata laluan salah!";
         }
     }
 ?>
 
-<link rel="stylesheet" href="abutton.css">
-<link rel="stylesheet" href="aborang.css">
-
-<h3 class="pendek">LOG IN</h3>
-<form class="pendek" action="login.php" method="post">
-    <table>
-        <tr>
-            <td><img src="imej/user.png"></td>
-            <td><input type="text" name="userid" placeholder="idpengguna"></td>
-        </tr>
-        <tr>
-            <td><img src="imej/lock.png"></td>
-            <td><input type="password" name="password" placeholder="katalaluan"></td>
-        </tr>
-    </table>
-    <button class="login" type="submit" name="submit">Login</button>
-    <button class="signup" type="button" onclick="window.location='signup.php'">Sign Up</button>
-</form>
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Masuk</title>
+    <link rel="stylesheet" href="auth.css">
+</head>
+<body>
+    <div class="auth-container">
+        <h3 class="auth-title">LOG MASUK</h3>
+        
+        <?php if ($error): ?>
+            <div class="error-message"><?php echo $error; ?></div>
+        <?php endif; ?>
+        
+        <form class="auth-form" action="login.php" method="post">
+            <div class="form-group">
+                <img src="imej/user.png" alt="User">
+                <input type="text" name="userid" class="form-input" placeholder="ID Pengguna" required>
+            </div>
+            
+            <div class="form-group">
+                <img src="imej/lock.png" alt="Password">
+                <input type="password" name="password" class="form-input" placeholder="Kata Laluan" required>
+            </div>
+            
+            <button type="submit" name="submit" class="auth-button login-button">Log Masuk</button>
+        </form>
+        
+        <div class="auth-links">
+            <p>Tiada akaun? <a href="signup.php">Daftar di sini</a></p>
+        </div>
+    </div>
+</body>
+</html>
