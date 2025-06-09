@@ -5,12 +5,12 @@
 
 <link rel="stylesheet" href="amenu.css">
 
-<header>
-    <img class="logo" src="imej/logo.png">
-    <img class="kelab" src="imej/namakedai.png">
-</header>
-
 <nav>
+    <header>
+        <img class="logo" src="imej/logo.png">
+        <img class="kelab" src="imej/namakedai.png">
+    </header>
+
     <ul>
         <li>
             <a href="#"><b>JURUJUAL</b></a>

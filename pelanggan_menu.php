@@ -8,12 +8,12 @@
 
 <link rel="stylesheet" href="amenu.css">
 
-<header>
-    <img class="logo" src="imej/logo.png">
-    <img class="kelab" src="imej/namakedai.png">
-</header>
-
 <nav>
+    <header>
+        <img class="logo" src="imej/logo.png">
+        <img class="kelab" src="imej/namakedai.png">
+    </header>
+
     <ul>
         <li>
             <a href="index.php"><b>MENU</b></a>
@@ -28,7 +28,6 @@
                    echo "<a href='javascript:papar();'><b>TEMPAHAN</b></a>";
             ?> 
         </li>
-
     </ul>
     <ul>
         <li>
@@ -47,7 +46,6 @@
           $sql = "select * from pelanggan where no_telefon = '$no_telefon' "; 
           $result = mysqli_query($sambungan, $sql);
           $pelanggan = mysqli_fetch_array($result);   
-          # echo "Selamat datang $pelanggan[nama_pelanggan]";
        } 
     ?> 
 </nav>
