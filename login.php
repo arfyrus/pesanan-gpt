@@ -6,41 +6,31 @@
     
     if (isset($_POST["submit"])) {
         $userid = mysqli_real_escape_string($sambungan, $_POST["userid"]);
-        $password = $_POST["password"];
+        $password = mysqli_real_escape_string($sambungan, $_POST["password"]);
         
         $jumpa = FALSE;
         
         // Check pelanggan table
-        $sql = "SELECT * FROM pelanggan WHERE no_telefon = ?";
-        $stmt = mysqli_prepare($sambungan, $sql);
-        mysqli_stmt_bind_param($stmt, "s", $userid);
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
+        $sql = "SELECT * FROM pelanggan WHERE no_telefon = '$userid' AND password = '$password'";
+        $result = mysqli_query($sambungan, $sql);
         
         if ($pelanggan = mysqli_fetch_array($result)) {
-            if (password_verify($password, $pelanggan["password"])) {
-                $jumpa = TRUE;
-                $_SESSION["idpengguna"] = $pelanggan["no_telefon"];
-                $_SESSION["nama"] = $pelanggan["nama_pelanggan"];
-                $_SESSION["status"] = "pelanggan";
-            }
+            $jumpa = TRUE;
+            $_SESSION["idpengguna"] = $pelanggan["no_telefon"];
+            $_SESSION["nama"] = $pelanggan["nama_pelanggan"];
+            $_SESSION["status"] = "pelanggan";
         }
         
         // Check pekerja table if not found in pelanggan
         if (!$jumpa) {
-            $sql = "SELECT * FROM pekerja WHERE id_pekerja = ?";
-            $stmt = mysqli_prepare($sambungan, $sql);
-            mysqli_stmt_bind_param($stmt, "s", $userid);
-            mysqli_stmt_execute($stmt);
-            $result = mysqli_stmt_get_result($stmt);
+            $sql = "SELECT * FROM pekerja WHERE id_pekerja = '$userid' AND password = '$password'";
+            $result = mysqli_query($sambungan, $sql);
             
             if ($pekerja = mysqli_fetch_array($result)) {
-                if (password_verify($password, $pekerja["password"])) {
-                    $jumpa = TRUE;
-                    $_SESSION["idpengguna"] = $pekerja["id_pekerja"];
-                    $_SESSION["nama"] = $pekerja["nama_pekerja"];
-                    $_SESSION["status"] = "pekerja";
-                }
+                $jumpa = TRUE;
+                $_SESSION["idpengguna"] = $pekerja["id_pekerja"];
+                $_SESSION["nama"] = $pekerja["nama_pekerja"];
+                $_SESSION["status"] = "pekerja";
             }
         }
         
@@ -77,12 +67,17 @@
         <form class="auth-form" action="login.php" method="post">
             <div class="form-group">
                 <img src="imej/user.png" alt="User">
-                <input type="text" name="userid" class="form-input" placeholder="ID Pengguna" required>
+                <input type="text" name="userid" class="form-input" 
+                       placeholder="ID Pengguna (No. Telefon/Pekerja)" 
+                       required>
             </div>
             
             <div class="form-group">
                 <img src="imej/lock.png" alt="Password">
-                <input type="password" name="password" class="form-input" placeholder="Kata Laluan" required>
+                <input type="password" name="password" class="form-input" 
+                       placeholder="Kata Laluan" 
+                       maxlength="16"
+                       required>
             </div>
             
             <button type="submit" name="submit" class="auth-button login-button">Log Masuk</button>

@@ -7,7 +7,7 @@
     
     if (isset($_POST["submit"])) {
         $no_telefon = mysqli_real_escape_string($sambungan, $_POST["no_telefon"]);
-        $password = $_POST["password"];
+        $password = mysqli_real_escape_string($sambungan, $_POST["password"]);
         $nama_pelanggan = mysqli_real_escape_string($sambungan, $_POST["nama_pelanggan"]);
         
         // Validate phone number
@@ -15,24 +15,16 @@
             $error = "Nombor telefon mesti mengandungi 10 digit!";
         } else {
             // Check if phone number already exists
-            $sql = "SELECT * FROM pelanggan WHERE no_telefon = ?";
-            $stmt = mysqli_prepare($sambungan, $sql);
-            mysqli_stmt_bind_param($stmt, "s", $no_telefon);
-            mysqli_stmt_execute($stmt);
-            $result = mysqli_stmt_get_result($stmt);
+            $sql = "SELECT * FROM pelanggan WHERE no_telefon = '$no_telefon'";
+            $result = mysqli_query($sambungan, $sql);
             
             if (mysqli_num_rows($result) > 0) {
                 $error = "Nombor telefon ini sudah didaftarkan!";
             } else {
-                // Hash password
-                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-                
                 // Insert new user
-                $sql = "INSERT INTO pelanggan (no_telefon, password, nama_pelanggan) VALUES (?, ?, ?)";
-                $stmt = mysqli_prepare($sambungan, $sql);
-                mysqli_stmt_bind_param($stmt, "sss", $no_telefon, $hashed_password, $nama_pelanggan);
+                $sql = "INSERT INTO pelanggan (no_telefon, password, nama_pelanggan) VALUES ('$no_telefon', '$password', '$nama_pelanggan')";
                 
-                if (mysqli_stmt_execute($stmt)) {
+                if (mysqli_query($sambungan, $sql)) {
                     $success = "Pendaftaran berjaya! Sila log masuk.";
                     // Redirect after 2 seconds
                     header("refresh:2;url=login.php");
@@ -78,6 +70,7 @@
                 <img src="imej/user.png" alt="Name">
                 <input type="text" name="nama_pelanggan" class="form-input" 
                        placeholder="Nama Penuh" 
+                       maxlength="32"
                        required>
             </div>
             
@@ -85,7 +78,7 @@
                 <img src="imej/lock.png" alt="Password">
                 <input type="password" name="password" class="form-input" 
                        placeholder="Kata Laluan" 
-                       minlength="6"
+                       maxlength="16"
                        required>
             </div>
             
